@@ -8,6 +8,21 @@ const year = new Date().getFullYear();
     <p class="text-xs font-sans" style="color: var(--color-muted)">
       © {year} {SITE.name}. Written with care.
     </p>
+    
+    <div class="flex items-center gap-5">
+      <a href={SITE.social.twitter} target="_blank" rel="noopener"
+        class="text-xs font-sans uppercase tracking-widest"
+        style="color: var(--color-muted)">Twitter</a>
+
+      <a href={SITE.social.instagram} target="_blank" rel="noopener"
+        class="text-xs font-sans uppercase tracking-widest"
+        style="color: var(--color-muted)">Instagram</a>
+
+      <a href={SITE.social.linkedin} target="_blank" rel="noopener"
+        class="text-xs font-sans uppercase tracking-widest"
+        style="color: var(--color-muted)">LinkedIn</a>
+
+
 
     <div class="flex items-center gap-5">
       <a href="/rss.xml"

@@ -17,6 +17,13 @@ export const SITE = {
     { label: 'Bookshelf', href: '/bookshelf' },
     { label: 'About', href: '/about' },
   ],
+    social: {
+    twitter: 'https://twitter.com/yourhandle',
+    instagram: 'https://instagram.com/akr3.__',
+    linkedin: 'https://linkedin.com/in/yourhandle',
+    github: 'https://github.com/akr3here',
+    // add or remove any you want
+  },
 
   // Open Graph default image
   ogImage: '/og-default.png',
