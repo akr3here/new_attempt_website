@@ -1,0 +1,75 @@
+---
+import Site from '../../layouts/Site.astro';
+import PostCard from '../../components/PostCard.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import { getCollection } from 'astro:content';
+import { filterDrafts, sortByDate, getAllTags } from '../../lib/utils';
+
+export async function getStaticPaths() {
+  const writings = filterDrafts(await getCollection('writings'));
+  const logs = filterDrafts(await getCollection('logs'));
+  const all = [...writings, ...logs];
+  const tags = getAllTags(all);
+
+  return tags.map(tag => ({
+    params: { tag },
+    props: { tag },
+  }));
+}
+
+const { tag } = Astro.props;
+
+const writings = sortByDate(
+  filterDrafts(await getCollection('writings'))
+    .filter(w => w.data.tags.includes(tag))
+);
+const logs = sortByDate(
+  filterDrafts(await getCollection('logs'))
+    .filter(l => l.data.tags.includes(tag))
+);
+---
+
+<Site title={`#${tag}`} description={`All posts tagged ${tag}.`}>
+  <PageHeader title={`#${tag}`} description={`${writings.length + logs.length} items`} />
+
+  <div class="px-5 pb-20">
+    <div class="max-w-2xl mx-auto">
+      {writings.length > 0 && (
+        <div class="mb-10">
+          <p class="font-sans text-xs uppercase tracking-widest py-3 border-b mb-0"
+             style="color: var(--color-muted); border-color: var(--color-border)">
+            Writings
+          </p>
+          {writings.map(post => (
+            <PostCard
+              title={post.data.title}
+              description={post.data.description}
+              date={post.data.date}
+              slug={post.slug}
+              tags={post.data.tags}
+              collection="writings"
+            />
+          ))}
+        </div>
+      )}
+
+      {logs.length > 0 && (
+        <div>
+          <p class="font-sans text-xs uppercase tracking-widest py-3 border-b mb-0"
+             style="color: var(--color-muted); border-color: var(--color-border)">
+            Logs
+          </p>
+          {logs.map(log => (
+            <PostCard
+              title={log.data.title}
+              date={log.data.date}
+              slug={log.slug}
+              tags={log.data.tags}
+              collection="logs"
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  </div>
+</Site>

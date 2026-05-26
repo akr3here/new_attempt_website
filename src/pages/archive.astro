@@ -1,0 +1,89 @@
+---
+import Site from '../layouts/Site.astro';
+import PageHeader from '../components/PageHeader.astro';
+import { getCollection } from 'astro:content';
+import { filterDrafts, formatDate, isoDate } from '../lib/utils';
+
+const writings = filterDrafts(await getCollection('writings'));
+const logs = filterDrafts(await getCollection('logs'));
+
+type Entry = {
+  title: string;
+  date: Date;
+  href: string;
+  type: 'writing' | 'log';
+};
+
+const all: Entry[] = [
+  ...writings.map(w => ({
+    title: w.data.title,
+    date: w.data.date,
+    href: `/writings/${w.slug}`,
+    type: 'writing' as const,
+  })),
+  ...logs.map(l => ({
+    title: l.data.title,
+    date: l.data.date,
+    href: `/logs/${l.slug}`,
+    type: 'log' as const,
+  })),
+].sort((a, b) => b.date.getTime() - a.date.getTime());
+
+// Group by year
+const byYear = new Map<string, Entry[]>();
+for (const entry of all) {
+  const year = entry.date.getFullYear().toString();
+  if (!byYear.has(year)) byYear.set(year, []);
+  byYear.get(year)!.push(entry);
+}
+const years = Array.from(byYear.keys()).sort((a, b) => Number(b) - Number(a));
+---
+
+<Site title="Archive" description="All writing, chronologically.">
+  <PageHeader
+    title="Archive"
+    description="Everything written here, in order."
+  />
+
+  <div class="px-5 pb-20">
+    <div class="max-w-2xl mx-auto">
+      {years.map(year => (
+        <div class="mb-10">
+          <h2 class="font-sans text-xs uppercase tracking-widest py-4"
+              style="color: var(--color-muted)">
+            {year}
+          </h2>
+          <div class="space-y-0">
+            {byYear.get(year)!.map(entry => (
+              <div class="flex items-baseline justify-between gap-6 py-2.5 border-b"
+                   style="border-color: var(--color-border)">
+                <a href={entry.href}
+                   class="font-serif text-sm link leading-snug"
+                   style="color: var(--color-text)">
+                  {entry.title}
+                </a>
+                <div class="flex items-center gap-3 shrink-0">
+                  <span class="font-sans text-xs"
+                        style="color: var(--color-muted)">
+                    {entry.type}
+                  </span>
+                  <time datetime={isoDate(entry.date)}
+                        class="font-sans text-xs tabular-nums"
+                        style="color: var(--color-muted)">
+                    {formatDate(entry.date, 'short')}
+                  </time>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+
+      {all.length === 0 && (
+        <p class="font-serif italic py-8" style="color: var(--color-subtle)">
+          The archive is empty. For now.
+        </p>
+      )}
+    </div>
+  </div>
+</Site>

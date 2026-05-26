@@ -1,0 +1,71 @@
+---
+import Site from '../layouts/Site.astro';
+import PageHeader from '../components/PageHeader.astro';
+import { getCollection } from 'astro:content';
+import { formatDate } from '../lib/utils';
+
+const linksData = await getCollection('links');
+const links = linksData.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+
+// Group by tags
+const allTags = [...new Set(links.flatMap(l => l.data.tags))].sort();
+---
+
+<Site title="Links" description="Things worth reading.">
+  <PageHeader
+    title="Links"
+    description="Articles, essays, tools, and pages worth saving."
+  />
+
+  <div class="px-5 pb-20">
+    <div class="max-w-2xl mx-auto">
+      <div class="space-y-6">
+        {links.map(link => (
+          <div class="group py-5 border-b" style="border-color: var(--color-border)">
+            <div class="flex items-baseline justify-between gap-4 mb-1">
+              <a
+                href={link.data.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="font-serif text-base font-medium link transition-opacity group-hover:opacity-70"
+                style="color: var(--color-heading); text-decoration: none;"
+              >
+                {link.data.title}
+                <svg class="inline ml-1 mb-0.5 opacity-40" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                  <polyline points="15 3 21 3 21 9"/>
+                  <line x1="10" y1="14" x2="21" y2="3"/>
+                </svg>
+              </a>
+              <time class="font-sans text-xs whitespace-nowrap" style="color: var(--color-muted)">
+                {formatDate(link.data.date, 'short')}
+              </time>
+            </div>
+
+            {link.data.description && (
+              <p class="font-serif text-sm leading-relaxed mb-3" style="color: var(--color-subtle)">
+                {link.data.description}
+              </p>
+            )}
+
+            <p class="font-sans text-xs mb-2" style="color: var(--color-muted)">
+              {new URL(link.data.url).hostname.replace('www.', '')}
+            </p>
+
+            {link.data.tags.length > 0 && (
+              <div class="flex flex-wrap gap-2">
+                {link.data.tags.map(tag => (
+                  <a href={`/tags/${tag}`} class="tag">{tag}</a>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
+
+        {links.length === 0 && (
+          <p class="font-serif italic py-4" style="color: var(--color-subtle)">No links saved yet.</p>
+        )}
+      </div>
+    </div>
+  </div>
+</Site>

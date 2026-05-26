@@ -1,0 +1,57 @@
+---
+import Site from '../layouts/Site.astro';
+import PageHeader from '../components/PageHeader.astro';
+
+const lastUpdated = '2025-01-15';
+---
+
+<Site title="Now" description="What I'm doing now.">
+  <PageHeader
+    title="Now"
+    description="What I'm up to at this moment. Inspired by Derek Sivers' /now movement."
+  />
+
+  <div class="px-5 pb-20">
+    <div class="max-w-2xl mx-auto">
+
+      <div class="prose dark:prose-invert prose-stone">
+        <p class="text-sm not-italic" style="color: var(--color-muted)">
+          Last updated: {lastUpdated}
+        </p>
+
+        <h2>Reading</h2>
+        <p>
+          Currently reading <em>The Phenomenon of Man</em> by Teilhard de Chardin,
+          slowly and with a lot of rereading. Also working through
+          <em>A Pattern Language</em> by Christopher Alexander.
+        </p>
+
+        <h2>Writing</h2>
+        <p>
+          Working on a long essay about attention — what it means to pay close
+          attention to something, and what we lose when we stop doing that.
+        </p>
+
+        <h2>Thinking about</h2>
+        <ul>
+          <li>How to make good long-term decisions</li>
+          <li>The relationship between solitude and creative work</li>
+          <li>Digital gardening as a practice</li>
+        </ul>
+
+        <h2>Listening to</h2>
+        <p>
+          A lot of Bach lately. The Goldberg Variations, specifically the
+          Glenn Gould 1981 recording.
+        </p>
+      </div>
+
+      <hr class="divider my-8" />
+
+      <p class="font-sans text-xs" style="color: var(--color-muted)">
+        This is a <a href="https://nownownow.com/about" class="link" target="_blank" rel="noopener">/now page</a>.
+        Everyone should have one.
+      </p>
+    </div>
+  </div>
+</Site>

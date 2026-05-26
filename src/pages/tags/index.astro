@@ -1,0 +1,36 @@
+---
+import Site from '../../layouts/Site.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import { getCollection } from 'astro:content';
+import { filterDrafts, getAllTags } from '../../lib/utils';
+
+const writings = filterDrafts(await getCollection('writings'));
+const logs = filterDrafts(await getCollection('logs'));
+const all = [...writings, ...logs];
+const tags = getAllTags(all);
+
+// Count per tag
+const tagCounts = new Map<string, number>();
+for (const item of all) {
+  for (const tag of item.data.tags) {
+    tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1);
+  }
+}
+---
+
+<Site title="Tags" description="Browse by topic.">
+  <PageHeader title="Tags" description="Browse by topic." />
+
+  <div class="px-5 pb-20">
+    <div class="max-w-2xl mx-auto">
+      <div class="flex flex-wrap gap-3">
+        {tags.map(tag => (
+          <a href={`/tags/${tag}`} class="tag">
+            {tag}
+            <span class="ml-1 opacity-50">{tagCounts.get(tag)}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </div>
+</Site>

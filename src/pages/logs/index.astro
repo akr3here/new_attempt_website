@@ -1,0 +1,46 @@
+---
+import Site from '../../layouts/Site.astro';
+import PostCard from '../../components/PostCard.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import { getCollection } from 'astro:content';
+import { sortByDate, filterDrafts, groupByYear } from '../../lib/utils';
+
+const allLogs = await getCollection('logs');
+const logs = sortByDate(filterDrafts(allLogs));
+const byYear = groupByYear(logs);
+const years = Array.from(byYear.keys()).sort((a, b) => Number(b) - Number(a));
+---
+
+<Site title="Logs" description="Short notes, observations, fragments.">
+  <PageHeader
+    title="Logs"
+    description="Shorter notes. Observations, fragments, things noticed."
+  />
+
+  <div class="px-5 pb-20">
+    <div class="max-w-2xl mx-auto">
+      {years.map(year => (
+        <div class="mb-8">
+          <p class="font-sans text-xs uppercase tracking-widest py-4" style="color: var(--color-muted)">
+            {year}
+          </p>
+          {byYear.get(year)!.map(log => (
+            <PostCard
+              title={log.data.title}
+              date={log.data.date}
+              slug={log.slug}
+              tags={log.data.tags}
+              collection="logs"
+            />
+          ))}
+        </div>
+      ))}
+
+      {logs.length === 0 && (
+        <p class="font-serif italic py-8" style="color: var(--color-subtle)">
+          Nothing logged yet.
+        </p>
+      )}
+    </div>
+  </div>
+</Site>

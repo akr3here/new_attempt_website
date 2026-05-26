@@ -1,0 +1,108 @@
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
+  darkMode: 'class',
+  theme: {
+    extend: {
+      fontFamily: {
+        serif: ['Lora', 'Georgia', 'serif'],
+        sans: ['DM Sans', 'system-ui', 'sans-serif'],
+        mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
+      },
+      colors: {
+        stone: {
+          50:  '#fafaf9',
+          100: '#f5f5f4',
+          200: '#e7e5e4',
+          300: '#d6d3d1',
+          400: '#a8a29e',
+          500: '#78716c',
+          600: '#57534e',
+          700: '#44403c',
+          800: '#292524',
+          900: '#1c1917',
+          950: '#0c0a09',
+        },
+      },
+      typography: (theme) => ({
+        DEFAULT: {
+          css: {
+            '--tw-prose-body': theme('colors.stone.700'),
+            '--tw-prose-headings': theme('colors.stone.900'),
+            '--tw-prose-links': theme('colors.stone.900'),
+            '--tw-prose-bold': theme('colors.stone.900'),
+            '--tw-prose-counters': theme('colors.stone.500'),
+            '--tw-prose-bullets': theme('colors.stone.400'),
+            '--tw-prose-hr': theme('colors.stone.200'),
+            '--tw-prose-quotes': theme('colors.stone.700'),
+            '--tw-prose-quote-borders': theme('colors.stone.300'),
+            '--tw-prose-code': theme('colors.stone.800'),
+            '--tw-prose-pre-bg': theme('colors.stone.100'),
+            maxWidth: '66ch',
+            fontSize: '1.0625rem',
+            lineHeight: '1.8',
+            fontFamily: theme('fontFamily.serif').join(', '),
+            p: { marginTop: '1.4em', marginBottom: '1.4em' },
+            'h1, h2, h3, h4': {
+              fontFamily: theme('fontFamily.serif').join(', '),
+              fontWeight: '600',
+              letterSpacing: '-0.015em',
+            },
+            a: {
+              textDecoration: 'underline',
+              textDecorationColor: theme('colors.stone.300'),
+              textUnderlineOffset: '3px',
+              fontWeight: 'inherit',
+              transition: 'text-decoration-color 0.15s',
+              '&:hover': {
+                textDecorationColor: theme('colors.stone.700'),
+              },
+            },
+            blockquote: {
+              fontStyle: 'italic',
+              fontWeight: 'normal',
+              borderLeftWidth: '2px',
+              borderLeftColor: theme('colors.stone.300'),
+              paddingLeft: '1.5em',
+              color: theme('colors.stone.600'),
+            },
+            code: {
+              fontFamily: theme('fontFamily.mono').join(', '),
+              fontSize: '0.875em',
+              backgroundColor: theme('colors.stone.100'),
+              padding: '0.15em 0.35em',
+              borderRadius: '3px',
+              fontWeight: 'normal',
+              '&::before': { content: 'none' },
+              '&::after': { content: 'none' },
+            },
+          },
+        },
+        invert: {
+          css: {
+            '--tw-prose-body': theme('colors.stone.300'),
+            '--tw-prose-headings': theme('colors.stone.100'),
+            '--tw-prose-links': theme('colors.stone.100'),
+            '--tw-prose-bold': theme('colors.stone.100'),
+            '--tw-prose-counters': theme('colors.stone.400'),
+            '--tw-prose-bullets': theme('colors.stone.600'),
+            '--tw-prose-hr': theme('colors.stone.700'),
+            '--tw-prose-quotes': theme('colors.stone.300'),
+            '--tw-prose-quote-borders': theme('colors.stone.600'),
+            '--tw-prose-code': theme('colors.stone.200'),
+            '--tw-prose-pre-bg': theme('colors.stone.800'),
+            a: {
+              textDecorationColor: theme('colors.stone.600'),
+              '&:hover': { textDecorationColor: theme('colors.stone.300') },
+            },
+            blockquote: { borderLeftColor: theme('colors.stone.600') },
+            code: { backgroundColor: theme('colors.stone.800') },
+          },
+        },
+      }),
+    },
+  },
+  plugins: [
+    require('@tailwindcss/typography'),
+  ],
+};

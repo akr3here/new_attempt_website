@@ -1,0 +1,60 @@
+---
+import Site from '../layouts/Site.astro';
+import PageHeader from '../components/PageHeader.astro';
+import { SITE } from '../lib/config';
+---
+
+<Site title="About" description="About this site and its author.">
+  <PageHeader title="About" />
+
+  <div class="px-5 pb-20">
+    <div class="max-w-2xl mx-auto prose dark:prose-invert prose-stone">
+
+      <p>
+        I'm {SITE.name}. This is my personal site — a place for writing,
+        collecting, and thinking out loud. It has no algorithm, no engagement
+        metrics, no comment section. Just pages and time.
+      </p>
+
+      <p>
+        I write about ideas that seem important to me: attention, meaning,
+        craft, technology, how to live. The essays here are attempts to think
+        clearly about things that are hard to think clearly about.
+      </p>
+
+      <p>
+        The <a href="/logs">logs</a> are shorter — notes and fragments that
+        don't warrant a full essay but feel worth preserving. The
+        <a href="/now">now page</a> tells you what I'm currently doing.
+        The <a href="/bookshelf">bookshelf</a> is what I've been reading.
+      </p>
+
+      <h2>About this site</h2>
+
+      <p>
+        Built with <a href="https://astro.build" target="_blank" rel="noopener">Astro</a>,
+        styled with <a href="https://tailwindcss.com" target="_blank" rel="noopener">Tailwind CSS</a>.
+        Content lives in Markdown files. Deployed on
+        <a href="https://vercel.com" target="_blank" rel="noopener">Vercel</a>.
+        No trackers. No cookies. No JavaScript beyond what's necessary.
+      </p>
+
+      <p>
+        The design aims to be calm and readable. Typography matters a great
+        deal to me; I want reading here to feel unhurried.
+      </p>
+
+      <h2>Contact</h2>
+
+      <p>
+        Email is the best way to reach me:
+        <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
+      </p>
+
+      <p>
+        I read every message. I reply slowly but genuinely.
+      </p>
+
+    </div>
+  </div>
+</Site>
