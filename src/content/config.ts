@@ -58,5 +58,14 @@ const bookshelf = defineCollection({
     date: z.coerce.date().optional(),
   }),
 });
-
-export const collections = { writings, logs, quotes, links, bookshelf };
+const problems = defineCollection({
+  type: 'data',
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    solved: z.boolean().default(false),
+    date: z.string(),
+    tags: z.array(z.string()).optional(),
+  }),
+});
+export const collections = { writings, logs, quotes, links, bookshelf, problems, };

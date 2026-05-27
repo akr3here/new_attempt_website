@@ -48,6 +48,13 @@ function stars(n?: number) {
                     {book.data.note}
                   </p>
                 )}
+                {book.data.tags && book.data.tags.length > 0 && (
+                  <div class="flex flex-wrap gap-2 mt-2">
+                    {book.data.tags.map(tag => (
+                      <a href={`/tags/${tag}`} class="tag">{tag}</a>
+                    ))}
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -75,7 +82,7 @@ function stars(n?: number) {
                         {book.data.note}
                       </p>
                     )}
-                    {book.data.tags.length > 0 && (
+                    {book.data.tags && book.data.tags.length > 0 && (
                       <div class="flex flex-wrap gap-2 mt-2">
                         {book.data.tags.map(tag => (
                           <a href={`/tags/${tag}`} class="tag">{tag}</a>
@@ -107,6 +114,13 @@ function stars(n?: number) {
               <div class="py-3 border-b" style="border-color: var(--color-border)">
                 <span class="font-serif text-sm" style="color: var(--color-text)">{book.data.title}</span>
                 <span class="font-sans text-xs ml-2" style="color: var(--color-muted)">— {book.data.author}</span>
+                {book.data.tags && book.data.tags.length > 0 && (
+                  <div class="flex flex-wrap gap-2 mt-1.5">
+                    {book.data.tags.map(tag => (
+                      <a href={`/tags/${tag}`} class="tag">{tag}</a>
+                    ))}
+                  </div>
+                )}
               </div>
             ))}
           </div>
