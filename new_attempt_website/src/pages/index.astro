@@ -1,0 +1,155 @@
+---
+import Site from '../layouts/Site.astro';
+---
+
+<Site title="Alok Ray">
+
+  <section class="hero">
+    <div class="container">
+
+      <p class="eyebrow">
+        Alok Ray
+      </p>
+
+      <h1>
+        A small archive<br />
+        of changing thoughts.
+      </h1>
+
+      <div class="intro">
+
+        <p>
+          I want this website to document change.
+        </p>
+
+        <p>
+          Not just what I think, but how my thinking evolves over time.
+        </p>
+
+       
+
+        <p>
+          If I read something here years later and disagree with it completely,
+          that probably means it served its purpose.
+        </p>
+
+      </div>
+
+      
+
+      
+
+    </div>
+  </section>
+
+</Site>
+
+<style>
+  .hero {
+    min-height: 80vh;
+
+    display: flex;
+    align-items: center;
+
+    padding: 4rem 1.5rem 5rem;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 720px;
+
+    margin: 0 auto;
+  }
+
+  .eyebrow {
+    margin-bottom: 1.8rem;
+
+    font-family: var(--font-sans);
+    font-size: 0.7rem;
+    font-weight: 400;
+
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+
+    color: var(--color-muted);
+  }
+
+  h1 {
+    margin: 0;
+
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(2.8rem, 6vw, 4.4rem);
+    font-weight: 400;
+    line-height: 0.98;
+    letter-spacing: -0.05em;
+
+    color: var(--color-heading);
+
+    max-width: 11ch;
+  }
+
+  .intro {
+    margin-top: 2.2rem;
+    max-width: 37rem;
+  }
+
+  .intro p {
+    margin: 1rem 0;
+
+    font-family: Georgia, serif;
+    font-size: 1rem;
+    line-height: 1.9;
+
+    color: var(--color-subtle);
+  }
+
+  .divider {
+    width: 100%;
+    height: 1px;
+
+    margin: 2.7rem 0 1.8rem;
+
+    background: var(--color-border);
+  }
+
+  .nav {
+    display: flex;
+    gap: 1.6rem;
+    flex-wrap: wrap;
+  }
+
+  .nav a {
+    font-family: var(--font-sans);
+    font-size: 0.74rem;
+    font-weight: 600;
+
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+
+    text-decoration: none;
+    color: var(--color-muted);
+
+    transition: opacity 0.2s ease;
+  }
+
+  .nav a:hover {
+    opacity: 0.55;
+  }
+
+  @media (max-width: 720px) {
+
+    .hero {
+      min-height: auto;
+      padding: 3rem 1.2rem 4rem;
+    }
+
+    h1 {
+      line-height: 1;
+    }
+
+    .intro p {
+      font-size: 0.96rem;
+      line-height: 1.8;
+    }
+  }
+</style>

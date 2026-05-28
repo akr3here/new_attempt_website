@@ -1,0 +1,34 @@
+---
+import Prose from '../../layouts/Prose.astro';
+import { getCollection } from 'astro:content';
+import { sortByDate, filterDrafts } from '../../lib/utils';
+
+export async function getStaticPaths() {
+  const allLogs = await getCollection('logs');
+  const logs = sortByDate(filterDrafts(allLogs));
+
+  return logs.map((log, index) => ({
+    params: { slug: log.slug },
+    props: {
+      log,
+      prev: index < logs.length - 1 ? logs[index + 1] : null,
+      next: index > 0 ? logs[index - 1] : null,
+    },
+  }));
+}
+
+const { log, prev, next } = Astro.props;
+const { Content } = await log.render();
+---
+
+<Prose
+  title={log.data.title}
+  date={log.data.date}
+  tags={log.data.tags}
+  rawContent={log.body}
+  collection="logs"
+  prev={prev ? { slug: prev.slug, title: prev.data.title } : null}
+  next={next ? { slug: next.slug, title: next.data.title } : null}
+>
+  <Content />
+</Prose>

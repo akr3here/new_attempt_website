@@ -1,0 +1,243 @@
+---
+import Site from '../layouts/Site.astro';
+import PageHeader from '../components/PageHeader.astro';
+
+const lastUpdated = 'May 2026';
+---
+
+<Site
+  title="Now"
+  description="What I'm doing now."
+>
+  <PageHeader
+    title="Now"
+    description="What I'm up to at this moment. Inspired by Derek Sivers' /now movement."
+  />
+
+  <section class="now-section">
+    <div class="now-container">
+
+      <div class="now-meta">
+        <span class="status-dot"></span>
+        <span>Last updated: {lastUpdated}</span>
+      </div>
+
+      <div class="now-grid">
+
+        <section class="now-block">
+          <h2>Reading</h2>
+
+          <p>
+            -
+          </p>
+
+         
+        </section>
+
+        <section class="now-block">
+          <h2>Working</h2>
+
+          <p>
+            Working on making this website functional so that it get easier for me document by life.
+          </p>
+        </section>
+
+        <section class="now-block">
+          <h2>Thinking about</h2>
+
+          <ul>
+            <li>Digital gardening as a practice</li>
+            <li>-</li>
+            <li>-</li>
+          </ul>
+        </section>
+
+        <section class="now-block">
+          <h2>Listening to</h2>
+
+          <p>
+            Drake's Iceman
+          </p>
+        </section>
+
+      </div>
+
+      <div class="now-footer">
+        <p>
+          This is a
+          <a
+            href="https://nownownow.com/about"
+            class="now-link"
+            target="_blank"
+            rel="noopener"
+          >
+            /now page
+          </a>.
+          Everyone should have one.
+        </p>
+      </div>
+
+    </div>
+  </section>
+</Site>
+
+<style>
+  .now-section {
+    padding: 1.5rem 1.75rem 8rem;
+  }
+
+  .now-container {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  .now-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+
+    margin-bottom: 3rem;
+
+    font-family: var(--font-sans);
+    font-size: 0.74rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+
+    color: var(--color-muted);
+  }
+
+  .status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+
+    background: var(--color-muted);
+
+    opacity: 0.6;
+  }
+
+  .now-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+  }
+
+  .now-block {
+    position: relative;
+
+    padding-left: 1.4rem;
+
+    border-left: 1px solid var(--color-border);
+  }
+
+  .now-block::before {
+    content: "";
+    position: absolute;
+
+    left: -4px;
+    top: 0.5rem;
+
+    width: 7px;
+    height: 7px;
+
+    border-radius: 999px;
+
+    background: var(--color-bg);
+    border: 1px solid var(--color-muted);
+
+    opacity: 0.85;
+  }
+
+  .now-block h2 {
+    margin: 0 0 0.9rem;
+
+    font-family: var(--font-sans);
+    font-size: 0.76rem;
+    font-weight: 600;
+
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+
+    color: var(--color-muted);
+  }
+
+  .now-block p,
+  .now-block li {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1rem;
+    line-height: 1.95;
+
+    color: var(--color-heading);
+  }
+
+  .now-block p {
+    margin: 0.7rem 0;
+  }
+
+  .now-block ul {
+    margin: 0;
+    padding-left: 1.1rem;
+  }
+
+  .now-block li {
+    margin: 0.55rem 0;
+  }
+
+  .now-block em {
+    font-style: italic;
+    color: var(--color-heading);
+  }
+
+  .now-footer {
+    margin-top: 4.5rem;
+    padding-top: 1.5rem;
+
+    border-top: 1px solid var(--color-border);
+  }
+
+  .now-footer p {
+    font-family: var(--font-sans);
+    font-size: 0.76rem;
+    line-height: 1.8;
+    letter-spacing: 0.02em;
+
+    color: var(--color-muted);
+  }
+
+  .now-link {
+    color: var(--color-heading);
+    text-decoration: none;
+
+    border-bottom: 1px solid transparent;
+
+    transition:
+      opacity 0.2s ease,
+      border-color 0.2s ease;
+  }
+
+  .now-link:hover {
+    opacity: 0.7;
+    border-color: var(--color-border);
+  }
+
+  @media (max-width: 720px) {
+
+    .now-section {
+      padding: 1rem 1.2rem 6rem;
+    }
+
+    .now-grid {
+      gap: 2.3rem;
+    }
+
+    .now-block {
+      padding-left: 1.1rem;
+    }
+
+    .now-block p,
+    .now-block li {
+      font-size: 0.96rem;
+      line-height: 1.85;
+    }
+  }
+</style>

@@ -1,0 +1,120 @@
+---
+import Site from './Site.astro';
+import { formatDate, isoDate, readingTime } from '../lib/utils';
+
+interface Props {
+  title: string;
+  description?: string;
+  date: Date;
+  updated?: Date;
+  tags?: string[];
+  rawContent?: string;
+  prev?: { slug: string; title: string } | null;
+  next?: { slug: string; title: string } | null;
+  collection?: string;
+}
+
+const {
+  title,
+  description,
+  date,
+  updated,
+  tags = [],
+  rawContent = '',
+  prev,
+  next,
+  collection = 'writings',
+} = Astro.props;
+
+const rt = rawContent ? readingTime(rawContent) : null;
+---
+
+<Site title={title} description={description} article publishDate={date}>
+  <!-- Reading progress bar -->
+  <div id="reading-progress" style="width: 0%"></div>
+
+  <article class="px-5 py-16 md:py-24">
+    <!-- Header -->
+    <header class="max-w-2xl mx-auto mb-12 md:mb-16">
+      <div class="flex flex-wrap items-center gap-3 mb-6">
+        {tags.map(tag => (
+          <a href={`/tags/${tag}`} class="tag">{tag}</a>
+        ))}
+      </div>
+
+      <h1 class="font-serif text-3xl md:text-4xl font-semibold tracking-tight leading-tight mb-5"
+          style="color: var(--color-heading)">
+        {title}
+      </h1>
+
+      {description && (
+        <p class="font-serif text-lg italic leading-relaxed mb-6" style="color: var(--color-subtle)">
+          {description}
+        </p>
+      )}
+
+      <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm" style="color: var(--color-muted)">
+        <time datetime={isoDate(date)} class="font-sans">
+          {formatDate(date)}
+        </time>
+        {updated && (
+          <span>
+            Updated <time datetime={isoDate(updated)}>{formatDate(updated, 'short')}</time>
+          </span>
+        )}
+        {rt && <span>{rt}</span>}
+      </div>
+    </header>
+
+    <!-- Divider -->
+    <div class="max-w-2xl mx-auto mb-12">
+      <hr class="divider" />
+    </div>
+
+    <!-- Prose content -->
+    <div class="max-w-2xl mx-auto prose dark:prose-invert prose-stone">
+      <slot />
+    </div>
+
+    <!-- Footer nav -->
+    {(prev || next) && (
+      <nav class="max-w-2xl mx-auto mt-16 pt-8 border-t" style="border-color: var(--color-border)">
+        <div class="flex justify-between items-start gap-8 text-sm">
+          <div class="flex-1">
+            {prev && (
+              <a href={`/${collection}/${prev.slug}`}
+                 class="group flex flex-col gap-1 link no-underline">
+                <span style="color: var(--color-muted)">← Previous</span>
+                <span class="font-serif" style="color: var(--color-text)">{prev.title}</span>
+              </a>
+            )}
+          </div>
+          <div class="flex-1 text-right">
+            {next && (
+              <a href={`/${collection}/${next.slug}`}
+                 class="group flex flex-col gap-1 link no-underline">
+                <span style="color: var(--color-muted)">Next →</span>
+                <span class="font-serif" style="color: var(--color-text)">{next.title}</span>
+              </a>
+            )}
+          </div>
+        </div>
+      </nav>
+    )}
+  </article>
+</Site>
+
+<script>
+  // Reading progress
+  const bar = document.getElementById('reading-progress');
+  if (bar) {
+    const update = () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      bar.style.width = `${Math.min(progress, 100)}%`;
+    };
+    window.addEventListener('scroll', update, { passive: true });
+    update();
+  }
+</script>

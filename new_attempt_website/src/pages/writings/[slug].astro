@@ -1,0 +1,36 @@
+---
+import Prose from '../../layouts/Prose.astro';
+import { getCollection } from 'astro:content';
+import { sortByDate, filterDrafts } from '../../lib/utils';
+
+export async function getStaticPaths() {
+  const allWritings = await getCollection('writings');
+  const writings = sortByDate(filterDrafts(allWritings));
+
+  return writings.map((post, index) => ({
+    params: { slug: post.slug },
+    props: {
+      post,
+      prev: index < writings.length - 1 ? writings[index + 1] : null,
+      next: index > 0 ? writings[index - 1] : null,
+    },
+  }));
+}
+
+const { post, prev, next } = Astro.props;
+const { Content, remarkPluginFrontmatter } = await post.render();
+---
+
+<Prose
+  title={post.data.title}
+  description={post.data.description}
+  date={post.data.date}
+  updated={post.data.updated}
+  tags={post.data.tags}
+  rawContent={post.body}
+  collection="writings"
+  prev={prev ? { slug: prev.slug, title: prev.data.title } : null}
+  next={next ? { slug: next.slug, title: next.data.title } : null}
+>
+  <Content />
+</Prose>

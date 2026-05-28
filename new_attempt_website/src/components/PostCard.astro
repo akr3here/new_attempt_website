@@ -1,0 +1,56 @@
+---
+import { formatDate, isoDate } from '../lib/utils';
+
+interface Props {
+  title: string;
+  description?: string;
+  date: Date;
+  slug: string;
+  tags?: string[];
+  collection?: string;
+  featured?: boolean;
+}
+
+const {
+  title,
+  description,
+  date,
+  slug,
+  tags = [],
+  collection = 'writings',
+  featured = false,
+} = Astro.props;
+---
+
+<article class={`group py-6 border-b ${featured ? 'border-stone-200 dark:border-stone-700' : ''}`}
+         style="border-color: var(--color-border)">
+  <a href={`/${collection}/${slug}`} class="block no-underline">
+    <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1 sm:gap-6 mb-2">
+      <h2 class="font-serif text-base font-medium leading-snug transition-colors group-hover:opacity-70"
+          style="color: var(--color-heading)">
+        {title}
+      </h2>
+      <time
+        datetime={isoDate(date)}
+        class="font-sans text-xs whitespace-nowrap shrink-0 tabular-nums"
+        style="color: var(--color-muted)"
+      >
+        {formatDate(date, 'short')}
+      </time>
+    </div>
+
+    {description && (
+      <p class="font-serif text-sm leading-relaxed line-clamp-2" style="color: var(--color-subtle)">
+        {description}
+      </p>
+    )}
+  </a>
+
+  {tags.length > 0 && (
+    <div class="flex flex-wrap gap-2 mt-3">
+      {tags.map(tag => (
+        <a href={`/tags/${tag}`} class="tag">{tag}</a>
+      ))}
+    </div>
+  )}
+</article>

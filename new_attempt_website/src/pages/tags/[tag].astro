@@ -1,0 +1,188 @@
+---
+import Site from '../../layouts/Site.astro';
+import PostCard from '../../components/PostCard.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import { getCollection } from 'astro:content';
+import { filterDrafts, sortByDate, getAllTags } from '../../lib/utils';
+
+export async function getStaticPaths() {
+  const writings  = filterDrafts(await getCollection('writings'));
+  const logs      = filterDrafts(await getCollection('logs'));
+  const ideas     = (await getCollection('ideas')).filter(i => !i.data.draft);
+  const quotes    = await getCollection('quotes');
+  const links     = await getCollection('links');
+  const bookshelf = await getCollection('bookshelf');
+
+  const allTagSources = [
+    ...writings,
+    ...logs,
+    ...ideas    .map(e => ({ data: { tags: e.data.tags ?? [] } })),
+    ...quotes   .map(e => ({ data: { tags: e.data.tags ?? [] } })),
+    ...links    .map(e => ({ data: { tags: e.data.tags ?? [] } })),
+    ...bookshelf.map(e => ({ data: { tags: e.data.tags ?? [] } })),
+  ];
+
+  const tags = getAllTags(allTagSources);
+
+  return tags.map(tag => ({
+    params: { tag },
+    props: { tag },
+  }));
+}
+
+const { tag } = Astro.props;
+
+const writings  = sortByDate(
+  filterDrafts(await getCollection('writings'))
+    .filter(w => w.data.tags?.includes(tag))
+);
+const logs      = sortByDate(
+  filterDrafts(await getCollection('logs'))
+    .filter(l => l.data.tags?.includes(tag))
+);
+const ideas     = sortByDate(
+  (await getCollection('ideas'))
+    .filter(i => !i.data.draft && i.data.tags?.includes(tag))
+);
+const quotes    = (await getCollection('quotes'))
+  .filter(q => q.data.tags?.includes(tag));
+const links     = (await getCollection('links'))
+  .filter(l => l.data.tags?.includes(tag));
+const bookshelf = (await getCollection('bookshelf'))
+  .filter(b => b.data.tags?.includes(tag));
+
+const total = writings.length + logs.length + ideas.length + quotes.length + links.length + bookshelf.length;
+---
+
+<Site title={`#${tag}`} description={`All posts tagged ${tag}.`}>
+  <PageHeader title={`#${tag}`} description={`${total} items`} />
+
+  <div class="px-5 pb-20">
+    <div class="max-w-2xl mx-auto">
+
+      {writings.length > 0 && (
+        <div class="mb-10">
+          <p class="font-sans text-xs uppercase tracking-widest py-3 border-b mb-0"
+             style="color: var(--color-muted); border-color: var(--color-border)">
+            Writings
+          </p>
+          {writings.map(post => (
+            <PostCard
+              title={post.data.title}
+              description={post.data.description}
+              date={post.data.date}
+              slug={post.slug}
+              tags={post.data.tags}
+              collection="writings"
+            />
+          ))}
+        </div>
+      )}
+
+      {logs.length > 0 && (
+        <div class="mb-10">
+          <p class="font-sans text-xs uppercase tracking-widest py-3 border-b mb-0"
+             style="color: var(--color-muted); border-color: var(--color-border)">
+            Logs
+          </p>
+          {logs.map(log => (
+            <PostCard
+              title={log.data.title}
+              date={log.data.date}
+              slug={log.slug}
+              tags={log.data.tags}
+              collection="logs"
+            />
+          ))}
+        </div>
+      )}
+
+      {ideas.length > 0 && (
+        <div class="mb-10">
+          <p class="font-sans text-xs uppercase tracking-widest py-3 border-b mb-0"
+             style="color: var(--color-muted); border-color: var(--color-border)">
+            Ideas
+          </p>
+          <ul class="divide-y" style="border-color: var(--color-border)">
+            {ideas.map(i => (
+              <li class="py-4">
+                <p class="font-serif text-sm font-medium" style="color: var(--color-heading)">
+                  {i.data.title}
+                </p>
+                <time class="font-sans text-xs" style="color: var(--color-muted)">
+                  {i.data.date.toLocaleString('en', { month: 'short', year: 'numeric' })}
+                </time>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {quotes.length > 0 && (
+        <div class="mb-10">
+          <p class="font-sans text-xs uppercase tracking-widest py-3 border-b mb-0"
+             style="color: var(--color-muted); border-color: var(--color-border)">
+            Quotes
+          </p>
+          <ul class="divide-y" style="border-color: var(--color-border)">
+            {quotes.map(q => (
+              <li class="py-4">
+                <p class="font-serif italic" style="color: var(--color-text)">"{q.data.text}"</p>
+                <p class="font-sans text-xs mt-1" style="color: var(--color-muted)">
+                  — {q.data.author}{q.data.source ? `, ${q.data.source}` : ''}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {links.length > 0 && (
+        <div class="mb-10">
+          <p class="font-sans text-xs uppercase tracking-widest py-3 border-b mb-0"
+             style="color: var(--color-muted); border-color: var(--color-border)">
+            Links
+          </p>
+          <ul class="divide-y" style="border-color: var(--color-border)">
+            {links.map(l => (
+              <li class="py-4">
+                <a href={l.data.url} target="_blank" rel="noopener noreferrer"
+                   class="font-sans font-medium hover:underline" style="color: var(--color-heading)">
+                  {l.data.title} ↗
+                </a>
+                {l.data.description && (
+                  <p class="font-sans text-sm mt-0.5" style="color: var(--color-muted)">{l.data.description}</p>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {bookshelf.length > 0 && (
+        <div class="mb-10">
+          <p class="font-sans text-xs uppercase tracking-widest py-3 border-b mb-0"
+             style="color: var(--color-muted); border-color: var(--color-border)">
+            Bookshelf
+          </p>
+          <ul class="divide-y" style="border-color: var(--color-border)">
+            {bookshelf.map(b => (
+              <li class="py-4">
+                <p class="font-sans font-medium" style="color: var(--color-heading)">
+                  {b.data.title}
+                </p>
+                <p class="font-sans text-xs mt-0.5" style="color: var(--color-muted)">
+                  {b.data.author}{b.data.year ? ` · ${b.data.year}` : ''}
+                </p>
+                {b.data.note && (
+                  <p class="font-sans text-sm mt-1" style="color: var(--color-muted)">{b.data.note}</p>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+    </div>
+  </div>
+</Site>

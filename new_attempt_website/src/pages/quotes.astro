@@ -1,0 +1,46 @@
+---
+import Site from '../layouts/Site.astro';
+import PageHeader from '../components/PageHeader.astro';
+import { getCollection } from 'astro:content';
+import { isoDate, formatDate } from '../lib/utils';
+
+const quotesData = await getCollection('quotes');
+const quotes = quotesData.sort((a, b) => {
+  if (!a.data.date || !b.data.date) return 0;
+  return b.data.date.getTime() - a.data.date.getTime();
+});
+---
+
+<Site title="Quotes" description="Lines that stayed with me.">
+  <PageHeader
+    title="Quotes"
+    description="Lines from books, essays, and conversations that I keep returning to."
+  />
+
+  <div class="px-5 pb-20">
+    <div class="max-w-2xl mx-auto space-y-10">
+      {quotes.map(q => (
+        <blockquote class="group relative border-l-2 pl-6" style="border-color: var(--color-border)">
+          <p class="font-serif text-base leading-relaxed mb-3" style="color: var(--color-text)">
+            "{q.data.text}"
+          </p>
+          <footer class="font-sans text-xs" style="color: var(--color-muted)">
+            — {q.data.author}
+            {q.data.source && <span class="italic">, {q.data.source}</span>}
+          </footer>
+          {q.data.tags.length > 0 && (
+            <div class="flex flex-wrap gap-2 mt-3">
+              {q.data.tags.map(tag => (
+                <a href={`/tags/${tag}`} class="tag">{tag}</a>
+              ))}
+            </div>
+          )}
+        </blockquote>
+      ))}
+
+      {quotes.length === 0 && (
+        <p class="font-serif italic py-4" style="color: var(--color-subtle)">No quotes yet.</p>
+      )}
+    </div>
+  </div>
+</Site>

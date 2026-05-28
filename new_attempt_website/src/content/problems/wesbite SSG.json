@@ -1,0 +1,7 @@
+{
+  "title": "migrating to Astro architecture",
+  "description": "Migration from static HTML to a component-based Static Site Generator (SSG)",
+  "solved": true,
+  "date": "2025-05-24",
+  "tags": ["website"]
+}

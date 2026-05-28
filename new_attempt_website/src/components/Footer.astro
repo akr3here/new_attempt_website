@@ -1,0 +1,45 @@
+---
+import { SITE } from '../lib/config';
+const year = new Date().getFullYear();
+---
+
+<footer class="px-5 py-10 mt-16 border-t" style="border-color: var(--color-border)">
+  <div class="max-w-2xl mx-auto flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <p class="text-xs font-sans" style="color: var(--color-muted)">
+      © {year} {SITE.name}. Written with care.
+    </p>
+    
+    <div class="flex items-center gap-5">
+      <a href={SITE.social.twitter} target="_blank" rel="noopener"
+        class="text-xs font-sans uppercase tracking-widest"
+        style="color: var(--color-muted)">Twitter</a>
+
+      <a href={SITE.social.instagram} target="_blank" rel="noopener"
+        class="text-xs font-sans uppercase tracking-widest"
+        style="color: var(--color-muted)">Instagram</a>
+      <a href={SITE.social.substack} target="_blank" rel="noopener"
+        class="text-xs font-sans uppercase tracking-widest"
+        style="color: var(--color-muted)">Substack</a>
+
+
+
+    <div class="flex items-center gap-5">
+      
+      <a href="/archive"
+         class="text-xs font-sans uppercase tracking-widest transition-colors"
+         style="color: var(--color-muted)">
+        Archive
+      </a>
+      <a href="/problems"
+         class="text-xs font-sans uppercase tracking-widest transition-colors"
+         style="color: var(--color-muted)">
+        Problems
+      </a>
+      <a href="/about"
+         class="text-xs font-sans uppercase tracking-widest transition-colors"
+         style="color: var(--color-muted)">
+        About
+      </a>
+    </div>
+  </div>
+</footer>
