@@ -8,19 +8,18 @@ import { filterDrafts, sortByDate, getAllTags } from '../../lib/utils';
 export async function getStaticPaths() {
   const writings  = filterDrafts(await getCollection('writings'));
   const logs      = filterDrafts(await getCollection('logs'));
-  const ideas = filterDrafts(await getCollection('ideas'));
+  const ideas     = (await getCollection('ideas')).filter(i => !i.data.draft);
   const quotes    = await getCollection('quotes');
   const links     = await getCollection('links');
   const bookshelf = await getCollection('bookshelf');
 
-  // Build tag list from ALL collections
   const allTagSources = [
     ...writings,
     ...logs,
+    ...ideas    .map(e => ({ data: { tags: e.data.tags ?? [] } })),
     ...quotes   .map(e => ({ data: { tags: e.data.tags ?? [] } })),
     ...links    .map(e => ({ data: { tags: e.data.tags ?? [] } })),
     ...bookshelf.map(e => ({ data: { tags: e.data.tags ?? [] } })),
-    ...ideas.map(e => ({ data: { tags: e.data.tags ?? [] } })),
   ];
 
   const tags = getAllTags(allTagSources);
@@ -41,6 +40,10 @@ const logs      = sortByDate(
   filterDrafts(await getCollection('logs'))
     .filter(l => l.data.tags?.includes(tag))
 );
+const ideas     = sortByDate(
+  (await getCollection('ideas'))
+    .filter(i => !i.data.draft && i.data.tags?.includes(tag))
+);
 const quotes    = (await getCollection('quotes'))
   .filter(q => q.data.tags?.includes(tag));
 const links     = (await getCollection('links'))
@@ -48,7 +51,7 @@ const links     = (await getCollection('links'))
 const bookshelf = (await getCollection('bookshelf'))
   .filter(b => b.data.tags?.includes(tag));
 
-const total = writings.length + logs.length + quotes.length + links.length + bookshelf.length;
+const total = writings.length + logs.length + ideas.length + quotes.length + links.length + bookshelf.length;
 ---
 
 <Site title={`#${tag}`} description={`All posts tagged ${tag}.`}>
@@ -91,6 +94,27 @@ const total = writings.length + logs.length + quotes.length + links.length + boo
               collection="logs"
             />
           ))}
+        </div>
+      )}
+
+      {ideas.length > 0 && (
+        <div class="mb-10">
+          <p class="font-sans text-xs uppercase tracking-widest py-3 border-b mb-0"
+             style="color: var(--color-muted); border-color: var(--color-border)">
+            Ideas
+          </p>
+          <ul class="divide-y" style="border-color: var(--color-border)">
+            {ideas.map(i => (
+              <li class="py-4">
+                <p class="font-serif text-sm font-medium" style="color: var(--color-heading)">
+                  {i.data.title}
+                </p>
+                <time class="font-sans text-xs" style="color: var(--color-muted)">
+                  {i.data.date.toLocaleString('en', { month: 'short', year: 'numeric' })}
+                </time>
+              </li>
+            ))}
+          </ul>
         </div>
       )}
 

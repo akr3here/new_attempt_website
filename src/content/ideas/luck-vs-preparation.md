@@ -1,7 +1,7 @@
 ---
 title: Luck favours the prepared mind
 date: 2026-05-03
-tags: [thinking]
+tags: [Claude]
 pinned: true
 threads:
   - text: Preparation doesn't guarantee outcomes. But it changes what you're able to notice when an opportunity arrives.
