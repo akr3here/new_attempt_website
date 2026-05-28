@@ -1,0 +1,129 @@
+---
+import Site from '../../layouts/Site.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import { getCollection } from 'astro:content';
+import { sortByDate } from '../../lib/utils';
+
+const allIdeas = await getCollection('ideas');
+const ideas = sortByDate(allIdeas.filter(i => !i.data.draft));
+const pinned = ideas.filter(i => i.data.pinned);
+const rest = ideas.filter(i => !i.data.pinned);
+const ordered = [...pinned, ...rest];
+
+function fmtDate(date: Date) {
+  return date.toLocaleString('en', { month: 'short', year: 'numeric' });
+}
+---
+
+<Site title="Ideas" description="Interesting ideas, loosely held.">
+  <PageHeader title="Ideas" description="Loosely held. Some have threads." />
+
+  <div class="px-5 pb-20">
+    <div class="max-w-2xl mx-auto">
+
+      {ordered.length === 0 && (
+        <p class="font-serif italic py-8" style="color: var(--color-subtle)">No ideas yet.</p>
+      )}
+
+      <ul>
+        {ordered.map((idea, idx) => (
+          <li class="py-7 border-b first:border-t" style="border-color: var(--color-border)">
+
+            <!-- Root idea -->
+            <div class="flex gap-3 items-start">
+              <div class="flex flex-col items-center shrink-0">
+                <div class="w-1.5 h-1.5 rounded-full mt-2" style="background: var(--color-muted)"></div>
+                {idea.data.threads.length > 0 && (
+                  <div class="thread-line w-px mt-1.5 hidden" data-id={idx}
+                       style="background: var(--color-border); min-height: 1.5rem"></div>
+                )}
+              </div>
+              <div class="flex-1 min-w-0 pb-1">
+                <div class="flex items-baseline justify-between gap-4 mb-1">
+                  {idea.data.pinned && (
+                    <span class="font-sans text-xs uppercase tracking-widest" style="color: var(--color-muted)">pinned</span>
+                  )}
+                  <time class="font-sans text-xs tabular-nums ml-auto shrink-0" style="color: var(--color-muted)">
+                    {fmtDate(idea.data.date)}
+                  </time>
+                </div>
+                <p class="font-serif text-base leading-snug" style="color: var(--color-heading)">
+                  {idea.data.title}
+                </p>
+                <div class="flex items-center justify-between mt-3 flex-wrap gap-2">
+                  {idea.data.tags.length > 0 && (
+                    <div class="flex flex-wrap gap-2">
+                      {idea.data.tags.map(tag => (
+                        <a href={`/tags/${tag}`} class="tag">{tag}</a>
+                      ))}
+                    </div>
+                  )}
+                  {idea.data.threads.length > 0 && (
+                    <button
+                      class="thread-toggle font-sans text-xs transition-opacity hover:opacity-60"
+                      style="color: var(--color-muted)"
+                      data-id={idx}
+                      aria-expanded="false"
+                    >
+                      {idea.data.threads.length} thread{idea.data.threads.length > 1 ? 's' : ''} ↓
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <!-- Thread chain (collapsed by default) -->
+            {idea.data.threads.length > 0 && (
+              <div class="thread-body hidden" data-id={idx}>
+                {idea.data.threads.map((thread, i) => (
+                  <div class="flex gap-3 items-start">
+                    <div class="flex flex-col items-center shrink-0">
+                      <div class="w-px" style={`background: var(--color-border); height: 12px`}></div>
+                      <div class="w-1.5 h-1.5 rounded-full" style="background: var(--color-border)"></div>
+                      {i < idea.data.threads.length - 1 && (
+                        <div class="w-px flex-1 mt-1" style="background: var(--color-border); min-height: 1.5rem"></div>
+                      )}
+                    </div>
+                    <div class="flex-1 min-w-0 pb-3 pt-1">
+                      <time class="font-sans text-xs tabular-nums block mb-1" style="color: var(--color-muted)">
+                        {fmtDate(thread.date)}
+                      </time>
+                      <p class="font-serif text-sm leading-relaxed" style="color: var(--color-text)">
+                        {thread.text}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+          </li>
+        ))}
+      </ul>
+
+    </div>
+  </div>
+</Site>
+
+<script>
+  document.querySelectorAll('.thread-toggle').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.getAttribute('data-id');
+      const body = document.querySelector(`.thread-body[data-id="${id}"]`);
+      const line = document.querySelector(`.thread-line[data-id="${id}"]`);
+      const expanded = btn.getAttribute('aria-expanded') === 'true';
+
+      if (expanded) {
+        body?.classList.add('hidden');
+        line?.classList.add('hidden');
+        btn.setAttribute('aria-expanded', 'false');
+        btn.textContent = `${body?.querySelectorAll('.flex.gap-3').length} thread${body?.querySelectorAll('.flex.gap-3').length === 1 ? '' : 's'} ↓`;
+      } else {
+        body?.classList.remove('hidden');
+        line?.classList.remove('hidden');
+        btn.setAttribute('aria-expanded', 'true');
+        btn.textContent = `${body?.querySelectorAll('.flex.gap-3').length} thread${body?.querySelectorAll('.flex.gap-3').length === 1 ? '' : 's'} ↑`;
+      }
+    });
+  });
+</script>

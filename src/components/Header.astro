@@ -4,7 +4,7 @@ const pathname = Astro.url.pathname;
 ---
 
 <header class="px-5 py-6 md:py-8">
-  <nav class="max-w-2xl mx-auto flex items-center justify-between gap-6">
+  <nav class="max-w-3xl mx-auto flex items-center justify-between gap-4">
     <!-- Wordmark -->
     <a href="/"
        class="font-serif text-base font-medium tracking-tight transition-opacity hover:opacity-70"
@@ -13,7 +13,7 @@ const pathname = Astro.url.pathname;
     </a>
 
     <!-- Nav links (desktop) -->
-    <div class="hidden md:flex items-center gap-6">
+    <div class="hidden md:flex items-center gap-5">
       {SITE.nav.map(({ label, href }) => (
         <a
           href={href}
@@ -60,7 +60,7 @@ const pathname = Astro.url.pathname;
   </nav>
 
   <!-- Mobile nav -->
-  <div id="mobile-menu" class="hidden md:hidden max-w-2xl mx-auto mt-4 pb-2 border-t"
+  <div id="mobile-menu" class="hidden md:hidden max-w-3xl mx-auto mt-4 pb-2 border-t"
        style="border-color: var(--color-border)">
     <div class="flex flex-col gap-0 pt-3">
       {SITE.nav.map(({ label, href }) => (

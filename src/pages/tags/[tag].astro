@@ -8,6 +8,7 @@ import { filterDrafts, sortByDate, getAllTags } from '../../lib/utils';
 export async function getStaticPaths() {
   const writings  = filterDrafts(await getCollection('writings'));
   const logs      = filterDrafts(await getCollection('logs'));
+  const ideas = filterDrafts(await getCollection('ideas'));
   const quotes    = await getCollection('quotes');
   const links     = await getCollection('links');
   const bookshelf = await getCollection('bookshelf');
@@ -19,6 +20,7 @@ export async function getStaticPaths() {
     ...quotes   .map(e => ({ data: { tags: e.data.tags ?? [] } })),
     ...links    .map(e => ({ data: { tags: e.data.tags ?? [] } })),
     ...bookshelf.map(e => ({ data: { tags: e.data.tags ?? [] } })),
+    ...ideas.map(e => ({ data: { tags: e.data.tags ?? [] } })),
   ];
 
   const tags = getAllTags(allTagSources);

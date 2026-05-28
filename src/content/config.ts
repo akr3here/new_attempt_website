@@ -68,4 +68,20 @@ const problems = defineCollection({
     tags: z.array(z.string()).optional(),
   }),
 });
-export const collections = { writings, logs, quotes, links, bookshelf, problems, };
+
+const ideas = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string(),
+    date: z.coerce.date(),
+    tags: z.array(z.string()).default([]),
+    pinned: z.boolean().default(false),
+    draft: z.boolean().default(false),
+    threads: z.array(z.object({
+      text: z.string(),
+      date: z.coerce.date(),
+    })).default([]),
+  }),
+});
+
+export const collections = { writings, logs, quotes, links, bookshelf, problems, ideas, };

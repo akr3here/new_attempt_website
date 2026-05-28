@@ -1,0 +1,70 @@
+---
+import Prose from '../../layouts/Prose.astro';
+import { getCollection, getEntry } from 'astro:content';
+import { sortByDate, filterDrafts } from '../../lib/utils';
+
+export async function getStaticPaths() {
+  const allIdeas = await getCollection('ideas');
+    const ideas = sortByDate(allIdeas.filter(i => !i.data.draft));
+
+  return ideas.map((idea, index) => ({
+    params: { slug: idea.slug },
+    props: {
+      idea,
+      prev: index < ideas.length - 1 ? ideas[index + 1] : null,
+      next: index > 0 ? ideas[index - 1] : null,
+    },
+  }));
+}
+
+const { idea, prev, next } = Astro.props;
+const { Content } = await idea.render();
+
+// Resolve threaded ideas
+const threadedIdeas = await Promise.all(
+  idea.data.threads.map(slug => getEntry('ideas', slug))
+);
+const validThreads = threadedIdeas.filter(Boolean);
+---
+
+<Prose
+  title={idea.data.title}
+  date={idea.data.date}
+  tags={idea.data.tags}
+  rawContent={idea.body}
+  collection="ideas"
+  prev={prev ? { slug: prev.slug, title: prev.data.title } : null}
+  next={next ? { slug: next.slug, title: next.data.title } : null}
+>
+  <Content />
+
+  {validThreads.length > 0 && (
+    <div class="mt-12 pt-8 border-t" style="border-color: var(--color-border)">
+      <p class="font-sans text-xs uppercase tracking-widest mb-4" style="color: var(--color-muted)">
+        Threads
+      </p>
+      <ul class="space-y-3">
+        {validThreads.map(thread => (
+          <li>
+            <a href={`/ideas/${thread.slug}`}
+               class="group flex items-start gap-3 no-underline py-3 border-b"
+               style="border-color: var(--color-border)">
+              <span class="font-sans text-xs mt-1 shrink-0" style="color: var(--color-muted)">↗</span>
+              <div>
+                <p class="font-serif text-sm font-medium transition-opacity group-hover:opacity-50"
+                   style="color: var(--color-heading)">
+                  {thread.data.title}
+                </p>
+                {thread.data.description && (
+                  <p class="font-serif text-xs italic mt-0.5" style="color: var(--color-subtle)">
+                    {thread.data.description}
+                  </p>
+                )}
+              </div>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )}
+</Prose>

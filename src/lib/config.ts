@@ -12,6 +12,7 @@ export const SITE = {
     { label: 'Writings', href: '/writings' },
     { label: 'Logs', href: '/logs' },
     { label: 'Now', href: '/now' },
+    { label: 'Ideas', href: '/ideas' },
     { label: 'Quotes', href: '/quotes' },
     { label: 'Links', href: '/links' },
     { label: 'Bookshelf', href: '/bookshelf' },
