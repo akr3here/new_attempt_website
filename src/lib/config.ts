@@ -19,7 +19,7 @@ export const SITE = {
     { label: 'About', href: '/about' },
   ],
     social: {
-    twitter: 'https://twitter.com/yourhandle',
+    twitter: 'https://x.com/alok_as_akr3',
     instagram: 'https://instagram.com/akr3.__',
     linkedin: 'https://linkedin.com/in/yourhandle',
     github: 'https://github.com/akr3here',
