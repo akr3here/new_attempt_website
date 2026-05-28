@@ -22,7 +22,7 @@ export const SITE = {
     twitter: 'https://x.com/alok_as_akr3',
     instagram: 'https://instagram.com/akr3.__',
     linkedin: 'https://linkedin.com/in/yourhandle',
-    github: 'https://github.com/akr3here',
+    substack: 'https://substack.com/@akrai3?utm_source=share&utm_medium=android&r=6d3cuq',
     // add or remove any you want
   },
 
