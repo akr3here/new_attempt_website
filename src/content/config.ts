@@ -42,6 +42,7 @@ const links = defineCollection({
     description: z.string().optional(),
     tags: z.array(z.string()).default([]),
     date: z.coerce.date(),
+    pinned: z.boolean().default(false),
   }),
 });
 

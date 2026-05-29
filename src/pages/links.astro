@@ -5,9 +5,12 @@ import { getCollection } from 'astro:content';
 import { formatDate } from '../lib/utils';
 
 const linksData = await getCollection('links');
-const links = linksData.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+const links = linksData.sort((a, b) => {
+  if (a.data.pinned && !b.data.pinned) return -1;
+  if (!a.data.pinned && b.data.pinned) return 1;
+  return b.data.date.getTime() - a.data.date.getTime();
+});
 
-// Group by tags
 const allTags = [...new Set(links.flatMap(l => l.data.tags))].sort();
 ---
 
@@ -23,20 +26,25 @@ const allTags = [...new Set(links.flatMap(l => l.data.tags))].sort();
         {links.map(link => (
           <div class="group py-5 border-b" style="border-color: var(--color-border)">
             <div class="flex items-baseline justify-between gap-4 mb-1">
-              <a
-                href={link.data.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="font-serif text-base font-medium link transition-opacity group-hover:opacity-70"
-                style="color: var(--color-heading); text-decoration: none;"
-              >
-                {link.data.title}
-                <svg class="inline ml-1 mb-0.5 opacity-40" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-                  <polyline points="15 3 21 3 21 9"/>
-                  <line x1="10" y1="14" x2="21" y2="3"/>
-                </svg>
-              </a>
+              <div class="flex items-baseline gap-0">
+                {link.data.pinned && (
+                  <span class="font-sans text-xs uppercase tracking-widest mr-2" style="color: var(--color-muted)">pinned ·</span>
+                )}
+                
+                  <a href={link.data.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="font-serif text-base font-medium link transition-opacity group-hover:opacity-70"
+                  style="color: var(--color-heading); text-decoration: none;"
+                >
+                  {link.data.title}
+                  <svg class="inline ml-1 mb-0.5 opacity-40" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                    <polyline points="15 3 21 3 21 9"/>
+                    <line x1="10" y1="14" x2="21" y2="3"/>
+                  </svg>
+                </a>
+              </div>
               <time class="font-sans text-xs whitespace-nowrap" style="color: var(--color-muted)">
                 {formatDate(link.data.date, 'short')}
               </time>
