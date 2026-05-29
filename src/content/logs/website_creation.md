@@ -1,5 +1,5 @@
 ---
-title: created the website
+title: created this website
 date: 2026-05-24
 tags: [website]
 ---
