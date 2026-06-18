@@ -1,0 +1,759 @@
+---
+// src/pages/write.astro
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Void — Don't Stop Writing</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #080808;
+      --surface: rgba(255, 255, 255, 0.04);
+      --surface-raised: rgba(255, 255, 255, 0.08);
+      --border: rgba(255, 255, 255, 0.1);
+      --text-muted: #666;
+      --text-main: #aaa;
+      --text-bright: #fff;
+      
+      --bar-safe: #333;
+      --bar-warn: #e67e22;
+      --bar-danger: #ff3b30;
+
+      --font-ui: 'DM Sans', sans-serif;
+      --font-prose: 'Lora', serif;
+      --radius-lg: 28px;
+      --radius-sm: 100px;
+    }
+
+    html, body {
+      height: 100%;
+      width: 100%;
+      background: var(--bg);
+      color: var(--text-main);
+      font-family: var(--font-ui);
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── SETUP SCREEN ─── */
+    #setup-screen {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      background: var(--bg);
+      transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      padding: 20px;
+    }
+
+    .setup-card {
+      width: min(520px, 100vw);
+      padding: 60px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+      backdrop-filter: blur(20px);
+      display: flex;
+      flex-direction: column;
+      gap: 52px;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+    }
+
+    .setup-header h1 {
+      font-family: var(--font-prose);
+      font-size: 2.8rem;
+      font-weight: 400;
+      color: var(--text-bright);
+      letter-spacing: -0.04em;
+      margin-bottom: 16px;
+      line-height: 1.2;
+    }
+
+    .setup-header p {
+      font-size: 0.95rem;
+      line-height: 1.7;
+      color: var(--text-muted);
+      max-width: 420px;
+    }
+
+    .setup-section {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .setup-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .pill-group {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .pill {
+      flex: 1;
+      min-width: 100px;
+      padding: 12px 20px;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-ui);
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      white-space: nowrap;
+    }
+
+    .pill:hover {
+      background: var(--surface-raised);
+      border-color: rgba(255,255,255,0.3);
+    }
+
+    .pill.selected {
+      background: var(--text-bright);
+      color: var(--bg);
+      border-color: var(--text-bright);
+      font-weight: 500;
+    }
+
+    .start-btn {
+      padding: 16px;
+      background: var(--text-bright);
+      color: var(--bg);
+      border: none;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-ui);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, opacity 0.2s;
+      letter-spacing: 0.03em;
+    }
+
+    .start-btn:hover {
+      opacity: 0.9;
+      transform: scale(1.02);
+    }
+
+    .start-btn:active {
+      transform: scale(0.98);
+    }
+
+    /* ─── WRITING SCREEN ─── */
+    #write-screen {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 1s ease;
+    }
+
+    #write-screen.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    #top-bar {
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+      gap: 20px;
+    }
+
+    .stat { 
+      font-size: 0.7rem; 
+      color: var(--text-muted); 
+      text-transform: uppercase; 
+      letter-spacing: 0.1em; 
+      flex: 0 0 auto;
+}
+    .stat span { 
+      color: var(--text-bright); 
+      margin-left: 6px; 
+      font-weight: 500; 
+    }
+
+    #exit-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 8px 20px;
+      border-radius: var(--radius-sm);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    #exit-btn:hover {
+      border-color: var(--text-bright);
+      color: var(--text-bright);
+    }
+
+    #progress-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: rgba(255,255,255,0.02);
+    }
+
+    #countdown-bar {
+      height: 100%;
+      width: 100%;
+      background: var(--bar-safe);
+      transform-origin: left;
+      transition: background 0.4s ease;
+    }
+
+    #writer-wrap {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 0 20px;
+    }
+
+    #writer {
+      width: min(720px, 90vw);
+      height: min(70vh, 550px);
+      background: transparent;
+      border: none;
+      outline: none;
+      resize: none;
+      color: var(--text-bright);
+      font-family: var(--font-prose);
+      font-size: 1.35rem;
+      line-height: 1.9;
+      caret-color: var(--text-bright);
+      transition: filter 0.8s ease, opacity 0.8s ease, transform 0.8s ease, letter-spacing 0.8s ease;
+    }
+
+    /* THE EVAPORATION ANIMATION */
+    #writer.evaporating {
+      filter: blur(15px);
+      opacity: 0;
+      transform: translateY(-30px) scale(1.05);
+      letter-spacing: 0.3em;
+      pointer-events: none;
+    }
+
+    /* ─── END SCREEN ─── */
+    #end-screen {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 1s ease;
+      padding: 20px;
+    }
+
+    #end-screen.active { 
+      opacity: 1; 
+      pointer-events: all; 
+    }
+
+    .end-card {
+      width: min(480px, 100vw);
+      padding: 60px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      text-align: center;
+      backdrop-filter: blur(20px);
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+    }
+
+    .end-title { 
+      font-family: var(--font-prose); 
+      font-size: 2.2rem; 
+      color: var(--text-bright); 
+      letter-spacing: -0.02em;
+      line-height: 1.3;
+    }
+    
+    .end-stats {
+      display: flex;
+      gap: 20px;
+    }
+
+    .stat-box { 
+      flex: 1;
+      background: rgba(255,255,255,0.03);
+      padding: 28px;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.08);
+      transition: all 0.3s ease;
+    }
+
+    .stat-box:hover {
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(255,255,255,0.15);
+    }
+
+    .stat-box-lbl { 
+      font-size: 0.65rem; 
+      text-transform: uppercase; 
+      color: var(--text-muted); 
+      display: block; 
+      margin-bottom: 10px;
+      letter-spacing: 0.1em;
+    }
+
+    .stat-box-val { 
+      font-size: 1.8rem; 
+      color: var(--text-bright); 
+      font-family: var(--font-prose);
+      font-weight: 500;
+    }
+
+    .download-section {
+      background: rgba(255,255,255,0.02);
+      padding: 32px;
+      border-radius: 24px;
+      border: 1px solid rgba(255,255,255,0.08);
+      display: none;
+    }
+
+    .download-section p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .download-btn {
+      width: 100%;
+      padding: 14px;
+      background: var(--text-bright);
+      color: var(--bg);
+      border: none;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      margin-top: 16px;
+      transition: transform 0.2s, opacity 0.2s;
+    }
+
+    .download-btn:hover { 
+      transform: translateY(-2px);
+      opacity: 0.95;
+    }
+
+    .download-btn:active {
+      transform: translateY(0);
+    }
+
+    .restart-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.75rem;
+      text-decoration: underline;
+      text-underline-offset: 4px;
+      transition: color 0.2s;
+      letter-spacing: 0.05em;
+    }
+
+    .restart-btn:hover { 
+      color: var(--text-main); 
+    }
+
+    /* ─── MOBILE RESPONSIVE ─── */
+    @media (max-width: 768px) {
+      .setup-card {
+        width: 100vw;
+        padding: 48px 32px;
+        gap: 40px;
+        border-radius: 20px;
+      }
+
+      .setup-header h1 {
+        font-size: 2.2rem;
+        margin-bottom: 12px;
+      }
+
+      .setup-header p {
+        font-size: 0.9rem;
+      }
+
+      .pill-group {
+        gap: 10px;
+      }
+
+      .pill {
+        min-width: 80px;
+        padding: 10px 16px;
+        font-size: 0.8rem;
+      }
+
+      #top-bar {
+        height: 60px;
+        padding: 0 24px;
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+
+      .stats-left {
+        display: flex;
+        gap: 100px;
+        width: 100%;
+        flex: 1;
+      }
+
+      .stat {
+        font-size: 0.65rem;
+      }
+
+      #exit-btn {
+        padding: 6px 16px;
+        font-size: 0.65rem;
+      }
+
+      #writer {
+        font-size: 1.15rem;
+        line-height: 1.8;
+      }
+
+      .end-card {
+        width: 100vw;
+        padding: 48px 32px;
+        gap: 32px;
+        border-radius: 20px;
+      }
+
+      .end-title {
+        font-size: 1.8rem;
+      }
+
+      .stat-box {
+        padding: 24px;
+      }
+
+      .stat-box-val {
+        font-size: 1.5rem;
+      }
+
+      .download-section {
+        padding: 24px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .setup-card {
+        padding: 40px 24px;
+        gap: 36px;
+      }
+
+      .setup-header h1 {
+        font-size: 1.8rem;
+      }
+
+      .setup-header p {
+        font-size: 0.85rem;
+        line-height: 1.6;
+      }
+
+      .pill {
+        min-width: auto;
+        padding: 9px 14px;
+        font-size: 0.75rem;
+      }
+
+      .setup-label {
+        font-size: 0.6rem;
+      }
+
+      #writer-wrap {
+        padding: 20px 12px;
+      }
+
+      #writer {
+        font-size: 1rem;
+        line-height: 1.7;
+        height: min(65vh, 400px);
+      }
+
+      .end-card {
+        padding: 40px 24px;
+        gap: 28px;
+      }
+
+      .end-title {
+        font-size: 1.6rem;
+      }
+
+      .end-stats {
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .stat-box {
+        padding: 20px;
+      }
+
+      .stat-box-val {
+        font-size: 1.3rem;
+      }
+    }
+
+  </style>
+</head>
+<body>
+
+<!-- SETUP -->
+<div id="setup-screen">
+  <div class="setup-card">
+    <div class="setup-header">
+      <h1>The Void.</h1>
+      <p>A space for pure output. Stop for too long, and your progress evaporates into the ether.</p>
+    </div>
+
+    <div class="setup-section">
+      <div class="setup-label">Tempo</div>
+      <div class="pill-group">
+        <button class="pill" data-diff="8">Linger</button>
+        <button class="pill selected" data-diff="5">Flow</button>
+        <button class="pill" data-diff="3">Relentless</button>
+      </div>
+    </div>
+
+    <div class="setup-section">
+      <div class="setup-label">Objective</div>
+      <div class="pill-group">
+        <button class="pill goal-pill selected" data-min="5">5 Mins</button>
+        <button class="pill goal-pill" data-min="10">10 Mins</button>
+        <button class="pill goal-pill" data-min="20">20 Mins</button>
+      </div>
+    </div>
+
+    <button class="start-btn" id="start-btn">Enter Session</button>
+  </div>
+</div>
+
+<!-- WRITING -->
+<div id="write-screen">
+  <div id="progress-container"><div id="countdown-bar"></div></div>
+  <div id="top-bar">
+    <div class="stats-left">
+      <span class="stat">Words <span>/</span> <span id="word-count">0</span></span>
+      <span class="stat">Time Remaining <span>/</span> <span id="goal-timer">05:00</span></span>
+    </div>
+    <button id="exit-btn">Exit</button>
+  </div>
+  <div id="writer-wrap">
+    <textarea id="writer" spellcheck="false" placeholder="Start your engine..."></textarea>
+  </div>
+</div>
+
+<!-- END -->
+<div id="end-screen">
+  <div class="end-card">
+    <h2 class="end-title" id="end-msg">Session Concluded</h2>
+    
+    <div class="end-stats">
+      <div class="stat-box">
+        <span class="stat-box-lbl">Word Count</span>
+        <span class="stat-box-val" id="end-words">0</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-box-lbl">Time Elapsed</span>
+        <span class="stat-box-val" id="end-time">0:00</span>
+      </div>
+    </div>
+
+    <div id="download-reward" class="download-section">
+      <p>Goal reached. You kept the fire alive.</p>
+      <button class="download-btn" id="download-btn">Save Session</button>
+    </div>
+
+    <button class="restart-btn" onclick="location.reload()">New Session</button>
+  </div>
+</div>
+
+<script>
+  let deletionSeconds = 5;
+  let sessionMinutes = 5;
+  let deletionTimer = null;
+  let sessionInterval = null;
+  let sessionStartTime = null;
+  let sessionActive = false;
+  let finalContent = "";
+
+  const writer = document.getElementById('writer');
+  const countdownBar = document.getElementById('countdown-bar');
+
+  // Pill Selection (Tempo)
+  document.querySelectorAll('[data-diff]').forEach(pill => {
+    pill.addEventListener('click', () => {
+      document.querySelectorAll('[data-diff]').forEach(p => p.classList.remove('selected'));
+      pill.classList.add('selected');
+      deletionSeconds = parseInt(pill.dataset.diff);
+    });
+  });
+
+  // Pill Selection (Objective)
+  document.querySelectorAll('.goal-pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      document.querySelectorAll('.goal-pill').forEach(p => p.classList.remove('selected'));
+      pill.classList.add('selected');
+      sessionMinutes = parseInt(pill.dataset.min);
+      document.getElementById('goal-timer').textContent = `${sessionMinutes.toString().padStart(2, '0')}:00`;
+    });
+  });
+
+  // Start logic
+  document.getElementById('start-btn').addEventListener('click', () => {
+    sessionActive = true;
+    sessionStartTime = Date.now();
+    document.getElementById('setup-screen').style.opacity = '0';
+    setTimeout(() => {
+      document.getElementById('setup-screen').style.display = 'none';
+      document.getElementById('write-screen').classList.add('active');
+      writer.focus();
+      resetDeletionTimer();
+      startSessionTimer();
+    }, 800);
+  });
+
+  function resetDeletionTimer() {
+    if (!sessionActive) return;
+    clearInterval(deletionTimer);
+    let elapsed = 0;
+    const totalMs = deletionSeconds * 1000;
+
+    deletionTimer = setInterval(() => {
+      elapsed += 50;
+      const progress = 1 - (elapsed / totalMs);
+      countdownBar.style.transform = `scaleX(${progress})`;
+
+      // Color Progression: Grey -> Orange -> Red
+      if (progress > 0.6) {
+        countdownBar.style.background = 'var(--bar-safe)';
+      } else if (progress > 0.25) {
+        countdownBar.style.background = 'var(--bar-warn)';
+      } else {
+        countdownBar.style.background = 'var(--bar-danger)';
+      }
+
+      if (elapsed >= totalMs) {
+        triggerEvaporation();
+      }
+    }, 50);
+  }
+
+  function triggerEvaporation() {
+    clearInterval(deletionTimer);
+    writer.classList.add('evaporating');
+    
+    // Smooth reset after animation plays
+    setTimeout(() => {
+      writer.value = '';
+      document.getElementById('word-count').textContent = '0';
+      writer.classList.remove('evaporating');
+      if(sessionActive) resetDeletionTimer();
+    }, 800);
+  }
+
+  writer.addEventListener('input', () => {
+    const words = writer.value.trim().split(/\s+/).filter(Boolean).length;
+    document.getElementById('word-count').textContent = words;
+    resetDeletionTimer();
+  });
+
+  function startSessionTimer() {
+    sessionInterval = setInterval(() => {
+      const diff = Math.floor((Date.now() - sessionStartTime) / 1000);
+      const goalSecs = sessionMinutes * 60;
+      const remaining = Math.max(0, goalSecs - diff);
+      
+      const m = Math.floor(remaining / 60).toString().padStart(2, '0');
+      const s = (remaining % 60).toString().padStart(2, '0');
+      document.getElementById('goal-timer').textContent = `${m}:${s}`;
+
+      if (diff >= goalSecs) {
+        endSession(true);
+      }
+    }, 1000);
+  }
+
+  function endSession(isSuccess) {
+    sessionActive = false;
+    finalContent = writer.value;
+    clearInterval(deletionTimer);
+    clearInterval(sessionInterval);
+
+    document.getElementById('end-words').textContent = document.getElementById('word-count').textContent;
+    const activeSecs = Math.floor((Date.now() - sessionStartTime) / 1000);
+    const m = Math.floor(activeSecs / 60);
+    const s = (activeSecs % 60).toString().padStart(2, '0');
+    document.getElementById('end-time').textContent = `${m}:${s}`;
+
+    const reward = document.getElementById('download-reward');
+    if (isSuccess && finalContent.trim().length > 0) {
+      document.getElementById('end-msg').textContent = "Objective Achieved";
+      reward.style.display = 'block';
+    } else {
+      document.getElementById('end-msg').textContent = "Session Abandoned";
+      reward.style.display = 'none';
+    }
+
+    document.getElementById('write-screen').classList.remove('active');
+    document.getElementById('end-screen').classList.add('active');
+  }
+
+  document.getElementById('exit-btn').addEventListener('click', () => endSession(false));
+
+  document.getElementById('download-btn').addEventListener('click', () => {
+    const blob = new Blob([finalContent], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `session-${new Date().getTime()}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+</script>
+
+</body>
+</html>
